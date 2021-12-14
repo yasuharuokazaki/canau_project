@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use DateTime;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Validator;
@@ -73,12 +74,15 @@ class ApiController extends Controller
         // $meeting_password = substr(base_convert(bin2hex(openssl_random_pseudo_bytes(9)),16,36),0,9);
         // dd($request);
         // ミーティング作成のためにAPIたたく
+        $time = $request->startAt;
+        $start_time=$time.':00Z';
+        // dd($start_time);
         $res = $client->request('POST',$url,[
             \GuzzleHttp\RequestOptions::JSON => [
                 'topic'=>$topic,
                 'type'=>2,
-                'start_time'=>$request->startAt.":00Z",
-                'timezone'=>'Asia/Tokyo',
+                'start_time'=>$start_time,
+                // 'timezone'=>'Asia/Tokyo',
                 // 'password'=>$meeting_password←ミーティングパスワード。今回は指定せず
             ]
         ]);
@@ -88,7 +92,7 @@ class ApiController extends Controller
         // データベースにミーティング情報を保存したければ、以下にモデルのクラスを作成して保存
         // Meething.tablename->some_var
         // これは、デモ用なので、ミーティング情報の保存までは作成してません。
-        
+
 
         $result_array = array(
             "topic"=>$result->topic,
