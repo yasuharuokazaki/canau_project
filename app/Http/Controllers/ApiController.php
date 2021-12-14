@@ -81,8 +81,8 @@ class ApiController extends Controller
             \GuzzleHttp\RequestOptions::JSON => [
                 'topic'=>$topic,
                 'type'=>2,
-                'start_time'=>$start_time,
-                // 'timezone'=>'Asia/Tokyo',
+                'start_time'=>$time.':00Z',
+                'timezone'=>'Asia/Tokyo',
                 // 'password'=>$meeting_password←ミーティングパスワード。今回は指定せず
             ]
         ]);
