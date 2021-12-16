@@ -75,13 +75,16 @@ class ApiController extends Controller
         // dd($request);
         // ミーティング作成のためにAPIたたく
         $time = $request->startAt;
-        $start_time=$time.':00Z';
+        $timestamp = strtotime($time.'-9 hour');
+        $start_time = date("Y:m:d\Th:m",$timestamp);
+        // dd($start_time);
+        $start_time=$start_time.':00Z';
         // dd($start_time);
         $res = $client->request('POST',$url,[
             \GuzzleHttp\RequestOptions::JSON => [
                 'topic'=>$topic,
                 'type'=>2,
-                'start_time'=>$time.':00Z',
+                'start_time'=>$start_time.':00Z',
                 'timezone'=>'Asia/Tokyo',
                 // 'password'=>$meeting_password←ミーティングパスワード。今回は指定せず
             ]
