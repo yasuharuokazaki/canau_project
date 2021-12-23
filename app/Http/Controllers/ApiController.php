@@ -6,6 +6,8 @@ use DateTime;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\DateTimeZone;
+use DateTimeZone as GlobalDateTimeZone;
 
 class ApiController extends Controller
 {
@@ -75,17 +77,20 @@ class ApiController extends Controller
         // dd($request);
         // ミーティング作成のためにAPIたたく
         $time = $request->startAt;
-        $time = strtotime($time);
-        $time = date("Y-m-d\Th:m",$time);
+        // dd($time.':00');
+        // $time = strtotime($time);
         // dd($time);
-        $start_time=$time.':00Z';
+        // $time = date("Y-m-d\TH:m:s",$time);
+        // dd($time);
+        $start_time=$time.':00';
+        // remove 'Z'
         // dd($start_time);
         $res = $client->request('POST',$url,[
             \GuzzleHttp\RequestOptions::JSON => [
                 'topic'=>$topic,
                 'type'=>2,
-                'start_time'=>$start_time.':00Z',
-                // 'timezone'=>'Asia/Tokyo',
+                'start_time'=>$start_time,
+                'timezone'=>'Asia/Tokyo',
                 // 'password'=>$meeting_password←ミーティングパスワード。今回は指定せず
             ]
         ]);
@@ -95,11 +100,14 @@ class ApiController extends Controller
         // データベースにミーティング情報を保存したければ、以下にモデルのクラスを作成して保存
         // Meething.tablename->some_var
         // これは、デモ用なので、ミーティング情報の保存までは作成してません。
+        $t = new DateTime($result->start_time);
+        $time = $t->setTimezone(new GlobalDateTimeZone('Asia/Tokyo'));
+        // $time_zone = new DateTimeZone('Asia/Tokyo');
 
-
+        // dd($time->format('Y-m-d H:i:s'));
         $result_array = array(
             "topic"=>$result->topic,
-            "startAt"=>$result->start_time,
+            "startAt"=>$time->format('Y-m-d H:i:s'),
             "startUrl"=>$result->join_url,
         );
         // dd($result);
